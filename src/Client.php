@@ -35,19 +35,22 @@ class Client
     /**
      * Send a message to ntfy
      *
-     * @param string $message
-     * @param array $options Optional ntfy headers (title, tags, priority, click, attach, etc.)
+     * @param  string  $message
+     * @param  array  $headers
      * @return bool
      */
-    public function send(string $message, array $options = []): bool
+    public function send(string $message, array $headers = []): bool
     {
-        $body = array_merge([
-            'message' => $message
-        ], $options);
+        $defaultHeaders = [
+            'Content-Type' => 'text/plain',
+        ];
+
+        $allHeaders = array_merge($defaultHeaders, $headers);
 
         try {
             $this->http->post($this->topic, [
-                'json' => $body
+                'headers' => $allHeaders,
+                'body' => $message
             ]);
             return true;
         } catch (GuzzleException $e) {
